@@ -8,7 +8,6 @@ from src.ticket_repository import TicketRepositoryDynamoDB
 
 
 def create_dependencies():
-
     ddb = boto3.resource('dynamodb', endpoint_url='http://localhost:8000')
 
     ticket_repository = TicketRepositoryDynamoDB(ddb)
@@ -18,31 +17,16 @@ def create_dependencies():
     }
 
 
-# class TicketRepository:
-#     def __init__(self):
-#         self._tickets = []
-#
-#     def save(self, ticket):
-
-#         self._tickets.append({
-#             "id": ticket.get("id"),
-#             "title": ticket.get("title"),
-#             "description": ticket.get("description")
-#         })
-#
-#     def list(self):
-#         return self._tickets
-
-
 def create_app(dependencies):
     app = Flask(__name__)
     api = Api(app)
 
+    # Passa dependências para o objeto config
     app.config['dependencies'] = dependencies
 
     @app.before_request
     def before_request():
-        # Make dependencies available in the request context
+        # Torna as dependências disponíveis no contexto do request
         g.ticket_repository = app.config['dependencies']['ticket_repository']
 
     api.add_namespace(create_ticket_ns)
@@ -55,7 +39,6 @@ def create_app(dependencies):
 
 
 app = create_app(create_dependencies())
-
 
 if __name__ == '__main__':
     app.run(debug=True)
